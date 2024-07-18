@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import HeaderLayout from './HeaderLayout'
-import FooterLayout from './FooterLayout'
-import { Button, Card, Col, Flex, Form, Input, Layout, Row, Select } from 'antd'
-import { Link, useHistory, useParams } from 'react-router-dom/cjs/react-router-dom'
-import pokeball from '../image/pokeball.png'
+import React, { useEffect, useState, useCallback } from 'react';
+import HeaderLayout from './HeaderLayout';
+import FooterLayout from './FooterLayout';
+import { Button, Card, Col, Flex, Form, Input, Layout, Row, Select } from 'antd';
+import { Link, useHistory, useParams } from 'react-router-dom';
+import pokeball from '../image/pokeball.png';
 
 export default function EditBox() {
 
@@ -11,24 +11,22 @@ export default function EditBox() {
     const navigate = useHistory();
     const { id } = useParams();
     const [form] = Form.useForm();
-    const [pokemonOption, setPokemonOption] = useState([])
-    const [pokemonImg, setPokemonImg] = useState(null)
+    const [pokemonOption, setPokemonOption] = useState([]);
+    const [pokemonImg, setPokemonImg] = useState(null);
 
-    const fetchPokemonName = async () => {
+    const fetchPokemonName = useCallback(async () => {
         try {
-            const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=500')
+            const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=500');
             const data = await res.json();
-            data.results.map((item, index) =>
-                setPokemonOption((prev) => [...prev, { value: index + 1, label: item.name }])
-            );
+            setPokemonOption(data.results.map((item, index) => ({ value: index + 1, label: item.name })));
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    }, []);
 
     const imageUrl = (value) => {
         setPokemonImg(value);
-    }
+    };
 
     const onFinish = (value) => {
         fetch(`http://localhost:8000/blogs/${id}`, {
@@ -36,38 +34,37 @@ export default function EditBox() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(value)
         }).then(() => {
-            navigate.push('/list')
-            console.log('done here')
-        })
-    }
+            navigate.push('/list');
+            console.log('done here');
+        });
+    };
 
-    const fetchData = async () => {
-        const res = await fetch(`http://localhost:8000/blogs/${id}`);
-        const data = await res.json();
-        
-        console.log('data-->',data)
-        
-        form.setFieldsValue(data);
-        
-        setPokemonImg(data.pokemon_id)
-    }
-    
+    const fetchData = useCallback(async () => {
+        try {
+            const res = await fetch(`http://localhost:8000/blogs/${id}`);
+            const data = await res.json();
+            console.log('data-->', data);
+            form.setFieldsValue(data);
+            setPokemonImg(data.pokemon_id);
+        } catch (error) {
+            console.log(error);
+        }
+    }, [id, form]);
+
     useEffect(() => {
-        fetchPokemonName()
+        fetchPokemonName();
         fetchData();
-    }, [])
+    }, [fetchPokemonName, fetchData]);
 
     return (
         <>
-
             <HeaderLayout />
-
             <Layout style={{ padding: "30px 15px", minHeight: '100vh', maxWidth: '1170px', margin: "auto", backgroundColor: '#fff' }}>
                 <Form form={form} onFinish={onFinish} layout='vertical' style={{ maxWidth: '700px', margin: '0 auto', width: '100%' }}>
                     <Row gutter={[24, 24]}>
                         <Col span={10}>
                             <Card style={{ height: '300px' }}>
-                                <Flex justify='center' ali>
+                                <Flex justify='center'>
                                     <img style={{ maxWidth: '100%' }} src={
                                         !pokemonImg ? pokeball : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonImg}.png`
                                     } alt="Pokemon" />
@@ -96,11 +93,8 @@ export default function EditBox() {
                         <Button htmlType='submit'>Submit</Button>
                     </Flex>
                 </Form>
-
             </Layout>
-
             <FooterLayout />
-
         </>
-    )
+    );
 }

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import HeaderLayout from './HeaderLayout'
-import FooterLayout from './FooterLayout'
-import { Button, Card, Col, Flex, Form, Input, Layout, Row, Select } from 'antd'
-import { Link, useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom'
-import pokeball from '../image/pokeball.png'
+import React, { useEffect, useState, useCallback } from 'react';
+import HeaderLayout from './HeaderLayout';
+import FooterLayout from './FooterLayout';
+import { Button, Card, Col, Flex, Form, Input, Layout, Row, Select } from 'antd';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import pokeball from '../image/pokeball.png';
 import queryString from 'query-string';
 
 export default function CreateBox() {
@@ -15,28 +15,26 @@ export default function CreateBox() {
     const [form] = Form.useForm();
     const { id, name } = queryString.parse(location.search);
 
-    const [pokemonOption, setPokemonOption] = useState([])
-    const [pokemonImg, setPokemonImg] = useState(null)
+    const [pokemonOption, setPokemonOption] = useState([]);
+    const [pokemonImg, setPokemonImg] = useState(null);
 
-    const fetchPokemonName = async () => {
+    const fetchPokemonName = useCallback(async () => {
         try {
-            const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=500')
+            const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=500');
             const data = await res.json();
-            console.log(data)
+            console.log(data);
 
-            data.results.map((item, index) =>
-                setPokemonOption((prev) => [...prev, { value: index + 1, label: item.name }])
-            );
+            setPokemonOption(data.results.map((item, index) => ({ value: index + 1, label: item.name })));
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    }, []);
 
-    const fetchFavPokemon = async () => {
-        setPokemonImg(id)
-        console.log(name, id)
-        form.setFieldValue( "pokemon_id", parseInt(id));
-    }
+    const fetchFavPokemon = useCallback(() => {
+        setPokemonImg(id);
+        console.log(name, id);
+        form.setFieldsValue({ "pokemon_id": parseInt(id) });
+    }, [id, name, form]);
 
     const imageUrl = (value) => {
         setPokemonImg(value);
@@ -48,15 +46,15 @@ export default function CreateBox() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(value)
         }).then(() => {
-            navigate.push('/list')
-            console.log('done here')
-        })
+            navigate.push('/list');
+            console.log('done here');
+        });
     }
 
     useEffect(() => {
-        fetchFavPokemon()
-        fetchPokemonName()
-    }, [])
+        fetchFavPokemon();
+        fetchPokemonName();
+    }, [fetchFavPokemon, fetchPokemonName]);
 
     return (
         <>
@@ -74,7 +72,7 @@ export default function CreateBox() {
                             </Card>
                         </Col>
                         <Col span={14}>
-                            <Form.Item form={form} name="pokemon_id" label="Pokemon Name">
+                            <Form.Item name="pokemon_id" label="Pokemon Name">
                                 <Select
                                     placeholder={'Select Pokemon'}
                                     style={{ width: '100%' }}
@@ -98,5 +96,5 @@ export default function CreateBox() {
             </Layout>
             <FooterLayout />
         </>
-    )
+    );
 }

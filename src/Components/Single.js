@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Breadcrumb, Card, Col, Divider, Layout, Row, Spin, Tag } from 'antd';
 import { useParams } from 'react-router-dom';
 import HeaderLayout from './HeaderLayout';
@@ -16,58 +16,50 @@ export default function Single() {
     const { id } = useParams();
 
     // Get pokemon data
-    const fetchPokeData = async () => {
+    const fetchPokeData = useCallback(async () => {
+        setLoading(true);
 
-        setLoading(false)
-
-        let baseURL = `https://pokeapi.co/api/v2/pokemon/${id}`
+        let baseURL = `https://pokeapi.co/api/v2/pokemon/${id}`;
         try {
             const res = await fetch(baseURL);
             const data = await res.json();
             setPokeData(data);
+            setLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
+            setLoading(false);
         }
-    }
+    }, [id]);
 
-    // Get pokemon data
-    const fetchPokeEvolution = async () => {
-
+    // Get pokemon evolution data
+    const fetchPokeEvolution = useCallback(async () => {
         try {
-
-            let evolutionIdData = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
-
+            let evolutionIdData = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
             let evolutionIdRes = await evolutionIdData.json();
-
             let evolutionId = evolutionIdRes?.evolution_chain.url;
 
-            let baseURL = evolutionId
-
+            let baseURL = evolutionId;
             const res = await fetch(baseURL);
             const data = await res.json();
             setPokeEvolutionData(data);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }
-
+    }, [id]);
 
     let EvolutionOne = pokeEvolutionData?.chain?.evolves_to[0]?.species?.name;
-
     let EvolutionTwo = pokeEvolutionData?.chain?.evolves_to[0]?.evolves_to[0]?.species?.name;
 
     useEffect(() => {
-        fetchPokeData()
-        fetchPokeEvolution()
-    }, [])
+        fetchPokeData();
+        fetchPokeEvolution();
+    }, [fetchPokeData, fetchPokeEvolution]);
 
     return (
         <>
             <Spin spinning={loading} fullscreen size='large' />
-
             <HeaderLayout />
             <Layout style={{ padding: "30px 15px", minHeight: '90vh', maxWidth: '1170px', margin: "auto", backgroundColor: '#fff' }}>
-
                 <Breadcrumb
                     style={{ marginBottom: '20px' }}
                     separator=">"
@@ -81,7 +73,6 @@ export default function Single() {
                         },
                     ]}
                 />
-
                 {pokeData && (
                     <Row gutter={[24, 24]}>
                         <Col span="10">
@@ -90,13 +81,11 @@ export default function Single() {
                             </Card>
                         </Col>
                         <Col span="14">
-
                             <Title style={{ margin: '0 0 10px 0' }} level={1}>{pokeData.name} <Divider type="vertical" />
                                 <Link to={`/create?id=${pokeData.id}&name=${pokeData.name}`}>
                                     <HeartOutlined style={{ fontSize: '25px' }} />
                                 </Link>
                             </Title>
-
                             {EvolutionOne && (
                                 <Title style={{ margin: 0 }} level={5}>
                                     Evolution:<br />
@@ -111,16 +100,13 @@ export default function Single() {
                                     </b>
                                 </Title>
                             )}
-
-                            <Title level={5} tyle={{ margin: 0 }}>Type: {
+                            <Title level={5} style={{ margin: 0 }}>Type: {
                                 pokeData.types.map((data, index) => (
                                     <Tag key={index}>{data?.type?.name}</Tag>
                                 ))
                             } </Title>
                             <Title style={{ margin: 0 }} level={5}>Height: {pokeData.height} <Divider type="vertical" /> Weight: {pokeData.weight}</Title>
-
                             <Divider />
-
                             <Title level={4} style={{ margin: 0 }}>
                                 Abilities:<br /> {
                                     pokeData.abilities.map((data, index) => (
@@ -128,9 +114,7 @@ export default function Single() {
                                     ))
                                 }
                             </Title>
-
                             <Divider />
-
                             <Title level={4} style={{ margin: 0 }}>Move:<br /> {
                                 pokeData.moves.map((data, index) => (
                                     <Tag key={index}>{data?.move?.name}</Tag>
@@ -141,8 +125,6 @@ export default function Single() {
                 )}
             </Layout>
             <FooterLayout />
-
         </>
     )
-
 }
