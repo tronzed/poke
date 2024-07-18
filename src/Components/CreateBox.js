@@ -18,7 +18,6 @@ export default function CreateBox() {
     const [pokemonOption, setPokemonOption] = useState([])
     const [pokemonImg, setPokemonImg] = useState(null)
 
-
     const fetchPokemonName = async () => {
         try {
             const res = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=500')
@@ -33,16 +32,10 @@ export default function CreateBox() {
         }
     }
 
-
     const fetchFavPokemon = async () => {
         setPokemonImg(id)
-
         console.log(name, id)
-
-        // const data = { "pokemon_id": parseInt(id)}      
-
         form.setFieldValue( "pokemon_id", parseInt(id));
-
     }
 
     const imageUrl = (value) => {
