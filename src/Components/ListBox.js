@@ -12,7 +12,7 @@ export default function ListBox() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('http://localhost:8000/blogs');
+      const res = await fetch('https://api.jsonbin.io/v3/b/669a7dd3acd3cb34a86862c2');
       const data = await res.json();
       setBlogData(data)
     } catch (error) {
@@ -22,7 +22,7 @@ export default function ListBox() {
 
   const deleteData = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8000/blogs/${id}`, {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/669a7dd3acd3cb34a86862c2/${id}`, {
         method: 'DELETE'
       })
 
@@ -50,9 +50,11 @@ export default function ListBox() {
           <Button><Link to={'/create'}>Add Favorite</Link></Button>
         </Flex>
 
+        {console.log('blogData-->',blogData)}
+
         <Row gutter={[24, 24]}>
           {
-            blogData?.map((data, index) => (
+            blogData?.record?.blogs?.map((data, index) => (
               <Col span={4}>
                 <Card key={index} style={{ marginBottom: '10px' }}>
                   <img style={{ maxWidth: '100%' }} src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.pokemon_id}.png`
