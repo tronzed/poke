@@ -41,7 +41,7 @@ export default function CreateBox() {
     }
 
     const onFinish = (value) => {
-        fetch('https://api.jsonbin.io/v3/b/669a7dd3acd3cb34a86862c2/', {
+        fetch('http://localhost:8000/blogs/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(value)
