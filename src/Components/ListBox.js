@@ -12,7 +12,7 @@ export default function ListBox() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('http://localhost:8000/blogs/');
+      const res = await fetch('http://localhost:3000/blogs/');
       const data = await res.json();
       setBlogData(data)
     } catch (error) {
@@ -22,7 +22,7 @@ export default function ListBox() {
 
   const deleteData = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8000/blogs/${id}`, {
+      const res = await fetch(`http://localhost:3000/blogs/${id}`, {
         method: 'DELETE'
       })
 

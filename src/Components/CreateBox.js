@@ -8,6 +8,15 @@ import queryString from 'query-string';
 
 export default function CreateBox() {
 
+
+    const API_KEY = 'YOUR_API_KEY';
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
+      };
+
+
     const { TextArea } = Input;
 
     const navigate = useHistory();
@@ -41,7 +50,7 @@ export default function CreateBox() {
     }
 
     const onFinish = (value) => {
-        fetch('http://localhost:8000/blogs/', {
+        fetch('http://localhost:3000/blogs/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(value)

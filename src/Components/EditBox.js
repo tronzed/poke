@@ -29,7 +29,7 @@ export default function EditBox() {
     };
 
     const onFinish = (value) => {
-        fetch(`http://localhost:8000/blogs/${id}`, {
+        fetch(`http://localhost:3000/blogs/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(value)
@@ -41,7 +41,7 @@ export default function EditBox() {
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8000/blogs/${id}`);
+            const res = await fetch(`http://localhost:3000/blogs/${id}`);
             const data = await res.json();
             console.log('data-->', data);
             form.setFieldsValue(data);
